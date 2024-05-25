@@ -165,9 +165,9 @@ def get_molly_tennis_bet_type(data):
     line = data['line']
     if data['bet_id'] == '52':
         if data['side'] == 'HOME':
-            bet_type = 'for,tset,all,vwhole,p1'
+            bet_type = 'for,tset,all,vset1,p1'
         elif data['side'] == 'AWAY':
-            bet_type = 'for,tset,all,vwhole,p2'
+            bet_type = 'for,tset,all,vset1,p2'
     elif data['bet_id'] == '2':
         if data['side'] == 'OVER':
             bet_type = f'for,tset,all,vwhole,game,ahover,{int(line*4)}'
@@ -190,9 +190,9 @@ def get_molly_tennis_bet_type(data):
             bet_type = 'for,tset,1,vwhole,p2'
     elif data['bet_id'] == '1':
         if data['side'] == 'HOME':
-            bet_type = 'for,tset,all,vwhole,p1'
+            bet_type = 'for,tset,all,vset1,p1'
         elif data['side'] == 'AWAY':
-            bet_type = 'for,tset,all,vwhole,p2'
+            bet_type = 'for,tset,all,vset1,p2'
     
     return bet_type
 
