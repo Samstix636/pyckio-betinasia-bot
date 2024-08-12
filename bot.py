@@ -16,13 +16,13 @@ logging.basicConfig(filename = f'logs.log', format='%(asctime)s - %(message)s', 
 
 def main():
     
-    url = "https://api.pyckio.com/users/659e5d1160b2b5e200d391c1/mytimeline"
+    url = f"https://api.pyckio.com/users/{pyckio_user_id}/mytimeline"
 
     payload = ""
     headers = {
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "en-US,en;q=0.6",
-        "Authorization": "Bearer 9308435e-7ded-49c0-8f79-ab853c427d4c",
+        "Authorization": "Bearer token", 
         "Connection": "keep-alive",
         "Origin": "https://pyckio.com",
         "Sec-Fetch-Dest": "empty",
@@ -49,7 +49,7 @@ def main():
                 bet_data['id'] = latest_data['id']
                 bet_data['tipster'] = latest_data['userStatic']['username']
                 bet_data['tipster_rank'] = latest_data['userStatic']['type']
-                if bet_data['tipster_rank'] != 'GRANDMASTER':
+                if bet_data['tipster_rank'] not in ['GRANDMASTER', 'PRO', 'PREPRO']:
                     continue
                 event_slug = latest_data['eventSlug']
                 sport, country, league = event_slug.split('-')[:3]
@@ -138,20 +138,11 @@ def get_molly_event_id(data):
         comp_score = get_single_match_score(pyckio_competition_name, [molly_comp_name])
         home_name_score, away_name_score = get_double_match_score(normalise_name(pyckio_home_name), normalise_name(pyckio_away_name), [normalise_name(event['home'])], [normalise_name(event['away'])])
         if home_name_score >= 85 and away_name_score >= 85:
-            # print(event['home'], ': ', home_name_score, ' - ', event['away'], ': ', away_name_score)
-            # print('-------------- Match Found ---------------------------')
-            # print('Checked: ', pyckio_home_name, ' vs ', pyckio_away_name)
-            # print('Found: ', event)
             match_found = True
             return event['event_id']
         elif comp_score >= 60:
-            # print('> matched comp_name: ', molly_comp_name, ', Score: ', comp_score)
             home_name_score, away_name_score = get_double_match_score(normalise_name(pyckio_home_name), normalise_name(pyckio_away_name), [normalise_name(event['home'])], [normalise_name(event['away'])])
-            # print(event['home'], ': ', home_name_score, ' - ', event['away'], ': ', away_name_score)
             if (home_name_score >= 65 and away_name_score >= 65) or (home_name_score >= 50 and away_name_score >= 80) or (home_name_score >= 80 and away_name_score >= 50):
-                # print('-------------- Match Found ---------------------------')
-                # print('Checked: ', pyckio_home_name, ' vs ', pyckio_away_name)
-                # print('Found: ', event)
                 match_found = True
                 return event['event_id']
     
@@ -295,8 +286,6 @@ class WSStream(object):
         self.ws = None
         self.s = s
         self.token = tk
-        # self.f = open('pre_stream_data.txt', "w")
-        # self.off = open('offers_stream.txt', "w")
         self.offers_stream = []
         
         
@@ -391,6 +380,13 @@ def get_saved_token():
     # print(lines)
     token = lines[0].strip()
     return token  
+
+def get_pyckio_id():
+    f = open('pyckio_user.txt')
+    lines = f.readlines()
+    # print(lines)
+    id_ = lines[0].strip()
+    return id_ 
     
     
 
@@ -406,6 +402,8 @@ if __name__ == "__main__":
     wks1 = sht.worksheet_by_title('Report')
     rows = wks1.get_all_values(include_tailing_empty=True, include_tailing_empty_rows=False, returnas='matrix')
     parsed_ids = [row[0] for row in rows[1:]]
+    
+    pyckio_user_id = get_pyckio_id()
     
     not_matched = []
     stake_amount = input('Enter stake amount to use >>>')
